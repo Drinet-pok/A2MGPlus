@@ -1,0 +1,159 @@
+.Info-diaria{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-inline:10px;
+  background-color: rgb(255, 255, 255);
+  
+}
+
+.texto-izquierda{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 0.7rem;
+}
+
+.texto-derecha{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 0.7rem;
+  gap: 14px;
+}
+
+.separador-icono{
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #B2B2B2;
+}
+
+
+//****************Condicion mesas**********************
+
+.main-content{
+  display: flex;
+  flex-direction: column;
+}
+
+
+.leyenda{
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+  padding: 0px 10px;
+}
+
+.leyenda * {
+  margin: 0;
+}
+
+.leyenda H2{
+  color: #368385;
+}
+
+/* Nivel de riesgo */
+
+.nivel-riesgo{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+
+}
+
+.bajo,.medio,.alto{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.bajo svg{
+  color: #84E191;
+}
+
+.medio svg{
+  color: #FFFF66;
+}
+
+.alto svg{
+  color: #FF5050;
+}
+/* Vehiculo */
+
+.vehiculo{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.par{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+}
+
+
+
+
+.contenedor-cuadricula{
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  padding-inline: 10px;
+  width: 100%;
+}
+
+.cordillera-barranco{
+  flex: 0 0 auto;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 10px;
+}
+
+.contenedor-cuadricula-correa{
+  flex:1;
+}
+
+.cuadricula {
+  display: grid;
+  flex: 1;
+  grid-template-columns: repeat(22, 1fr); 
+  grid-template-rows: repeat(1, 1fr);    
+  gap: 2px;
+}
+
+.item {
+  aspect-ratio: 1 / 1; 
+  width: 100%;
+}
+.color-verde    { background-color: #84E191; }
+.color-amarillo { background-color: #FFFF66; }
+.color-rojo     { background-color: #FF5050; }
+
+/* Correa*/
+
+.correa {
+  display: grid;
+  gap: 1px;                             
+  width: 100%;
+  height: 15px;
+  box-sizing: border-box;
+  background-color: #B7B7B7;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #f9f9fc;
+  font-size: 0.80rem;
+  font-weight: bold;
+  justify-content: flex-end;
+  padding: 0 12px;
+}

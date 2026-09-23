@@ -1,0 +1,11 @@
+.layout-body {
+  display: flex;
+  align-items: stretch;   // <- asegura que sidebar y contenido se estiren verticalmente por igual
+  min-height: calc(100vh - 4rem);
+}
+
+.contenido {
+  flex: 1;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}

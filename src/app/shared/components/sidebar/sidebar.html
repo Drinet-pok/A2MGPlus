@@ -1,1 +1,40 @@
-<p>sidebar works!</p>
+<div class="sidebar">
+    <a routerLink="/resumen-general" routerLinkActive="activo" class="item-menu" (click)="toggleMenu()">
+        <span>Resumen general</span>
+    </a>
+    <a routerLink="/monitoreo-grietas" routerLinkActive="activo" class="item-menu" (click)="toggleMenu()">
+        <span>Monitoreo de grietas</span>
+    </a>
+    <a routerLink="/vista-aerea" routerLinkActive="activo" class="item-menu">
+        <span>Vista aérea</span>
+    </a>
+    <button class="boton-menu" (click)="toggleVariablesOperativas()">
+        <span>Variables operativas</span>
+    </button>
+
+    @if (toggleVariablesOperativasActive()) {
+    <div class="sub-menu">
+        <a routerLink="/variables-operativas/nivel-freatico" routerLinkActive="activo" class="item-sub-menu">
+            <span>Nivel freático</span>
+            </a>
+        <a routerLink="/variables-operativas/humedad" routerLinkActive="activo"
+            class="item-sub-menu"><span>Humedad</span></a>
+        <a routerLink="/variables-operativas/ultima-depositacion" routerLinkActive="activo" class="item-sub-menu">
+            <span>Última depositación</span>
+        </a>
+    </div>
+    }
+
+    <button class="boton-menu" (click)="toggleHerramientas()"><span>Herramientas</span></button>
+
+    @if (toggleHerramientasActive()) {
+    <div class="sub-menu">
+        <a routerLink="/herramientas/secciones" routerLinkActive="activo" class="item-sub-menu">
+            <span>Secciones</span>
+        </a>
+        <a routerLink="/herramientas/equilibrio-limite" routerLinkActive="activo" class="item-sub-menu">
+            <span>Equilibriolímite</span>
+        </a>
+    </div>
+    }
+</div>
