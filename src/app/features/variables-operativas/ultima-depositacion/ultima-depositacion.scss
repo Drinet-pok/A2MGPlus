@@ -75,15 +75,15 @@
 }
 
 .bajo svg{
-  color: #84E191;
+  color: #E97132;
 }
 
 .medio svg{
-  color: #FFFF66;
+  color: #F2AA84;
 }
 
 .alto svg{
-  color: #FF5050;
+  color: #FBE3D6;
 }
 /* Vehiculo */
 
@@ -135,9 +135,9 @@
   aspect-ratio: 1 / 1; 
   width: 100%;
 }
-.color-verde    { background-color: #84E191; }
-.color-amarillo { background-color: #FFFF66; }
-.color-rojo     { background-color: #FF5050; }
+.hoy    { background-color: #E97132; }
+.reciente { background-color: #F2AA84; }
+.pasado     { background-color: #FBE3D6; }
 
 /* Correa*/
 
@@ -156,4 +156,48 @@
   font-weight: bold;
   justify-content: flex-end;
   padding: 0 12px;
+}
+
+.provisorio {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.contenedor-mapa {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  border-radius: 1.5rem;
+  overflow: hidden;
+}
+
+.contenedor-tabla-detalles{
+  border-radius: 1.5rem;
+  overflow: hidden;
+  border: 1px solid #B7B7B7;
+  overflow-x: auto;
+}
+
+.tabla-detalles {
+  width: 100%;
+  border-collapse: collapse;   // evita el doble borde entre celdas adyacentes
+  font-size: 0.85rem;
+
+  th, td {
+    border: 1px solid #dee2e6;
+    padding: 0.5rem 0.75rem;
+    text-align: center;      // esto centra el contenido horizontalmente
+    vertical-align: middle;  // esto centra verticalmente (útil para las celdas con rowspan)
+    white-space: nowrap;     // evita que el texto de los headers se corte en varias líneas
+  }
+
+  thead th {
+    background-color: #f1f3f5;
+    font-weight: 600;
+  }
+
+  tbody tr:hover {
+    background-color: #f8f9fa;
+  }
 }

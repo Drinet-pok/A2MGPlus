@@ -1,3 +1,13 @@
+@use 'mdb-angular-ui-kit/assets/scss/mdb.free.scss';
+
+:root {
+  --mdb-body-font-family: "Roboto", sans-serif;
+}
+
+body {
+  font-family: var(--mdb-body-font-family);
+}
+
 * {
   box-sizing: border-box;
 }
