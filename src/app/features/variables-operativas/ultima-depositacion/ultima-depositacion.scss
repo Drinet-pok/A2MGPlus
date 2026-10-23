@@ -1,195 +1,57 @@
-.Info-diaria{
+:host {
+  display: block;
+}
+
+.page-container {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding-inline:10px;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.detalles {
+  display: flex;
+  flex-direction: column;
+  padding-inline: var(--space-sm);
   background-color: rgb(255, 255, 255);
-  
 }
 
-.texto-izquierda{
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  font-size: 0.7rem;
+.tabla-scroll {
+  overflow-x: auto;
 }
 
-.texto-derecha{
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  font-size: 0.7rem;
-  gap: 14px;
-}
-
-.separador-icono{
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  color: #B2B2B2;
-}
-
-
-//****************Condicion mesas**********************
-
-.main-content{
+.contenedor-tabla-detalles {
+  position: relative;
+  border-radius: 1.5rem;
+  border: 1px solid #B7B7B7;
+  overflow: hidden;
+  gap: 10px;
   display: flex;
   flex-direction: column;
 }
 
-
-.leyenda{
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  gap: 10px;
-  padding: 0px 10px;
-}
-
-.leyenda * {
-  margin: 0;
-}
-
-.leyenda H2{
-  color: #368385;
-}
-
-/* Nivel de riesgo */
-
-.nivel-riesgo{
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-
-}
-
-.bajo,.medio,.alto{
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.bajo svg{
-  color: #E97132;
-}
-
-.medio svg{
-  color: #F2AA84;
-}
-
-.alto svg{
-  color: #FBE3D6;
-}
-/* Vehiculo */
-
-.vehiculo{
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-}
-
-.par{
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 5px;
-}
-
-
-
-
-.contenedor-cuadricula{
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  padding-inline: 10px;
-  width: 100%;
-}
-
-.cordillera-barranco{
-  flex: 0 0 auto;
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  font-size: 10px;
-}
-
-.contenedor-cuadricula-correa{
-  flex:1;
-}
-
-.cuadricula {
-  display: grid;
-  flex: 1;
-  grid-template-columns: repeat(22, 1fr); 
-  grid-template-rows: repeat(1, 1fr);    
-  gap: 2px;
-}
-
-.item {
-  aspect-ratio: 1 / 1; 
-  width: 100%;
-}
-.hoy    { background-color: #E97132; }
-.reciente { background-color: #F2AA84; }
-.pasado     { background-color: #FBE3D6; }
-
-/* Correa*/
-
-.correa {
-  display: grid;
-  gap: 1px;                             
-  width: 100%;
-  height: 15px;
-  box-sizing: border-box;
-  background-color: #B7B7B7;
-  display: flex;
-  align-items: center;
-  text-align: center;
-  color: #f9f9fc;
-  font-size: 0.80rem;
-  font-weight: bold;
-  justify-content: flex-end;
-  padding: 0 12px;
-}
-
-.provisorio {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-}
-
-.contenedor-mapa {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  border-radius: 1.5rem;
-  overflow: hidden;
-}
-
-.contenedor-tabla-detalles{
-  border-radius: 1.5rem;
-  overflow: hidden;
-  border: 1px solid #B7B7B7;
-  overflow-x: auto;
+.boton-expandir {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 5;                  /* para que quede por encima del contenido */
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
 }
 
 .tabla-detalles {
   width: 100%;
-  border-collapse: collapse;   // evita el doble borde entre celdas adyacentes
+  border-collapse: collapse; // evita el doble borde entre celdas adyacentes
   font-size: 0.85rem;
 
-  th, td {
+  th,
+  td {
     border: 1px solid #dee2e6;
     padding: 0.5rem 0.75rem;
-    text-align: center;      // esto centra el contenido horizontalmente
-    vertical-align: middle;  // esto centra verticalmente (útil para las celdas con rowspan)
-    white-space: nowrap;     // evita que el texto de los headers se corte en varias líneas
+    text-align: center; // esto centra el contenido horizontalmente
+    vertical-align: middle; // esto centra verticalmente (útil para las celdas con rowspan)
+    white-space: nowrap; // evita que el texto de los headers se corte en varias líneas
   }
 
   thead th {
@@ -200,4 +62,114 @@
   tbody tr:hover {
     background-color: #f8f9fa;
   }
+}
+
+
+
+.contenedor-cuadricula {
+  display: flex;
+  flex-direction: row;
+  padding-inline: var(--space-sm);
+  width: 100%;
+  justify-content: center;
+  padding-inline: var(--space-xl);
+  padding-top: var(--space-sm);
+}
+
+.contenedor-cuadricula-correa {
+  --lado-mesa: 5rem;
+  width: 100%;
+  max-width: calc(15 * var(--lado-mesa) + 14 * 2px);
+  container-type: inline-size;
+}
+
+.cuadricula {
+  display: grid;
+  grid-template-columns: repeat(var(--columnas, 15), minmax(0, 1fr));
+  gap: 2px;
+
+  width: calc(var(--columnas, 15) / 15 * 100%);
+  margin-inline: auto;
+}
+
+.item {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item h4 {
+  font-size: clamp(0.4rem, 1.6cqw, 1.25rem);
+  text-align: center;
+}
+
+.hoy {
+  background-color: #E97132;
+}
+
+.reciente {
+  background-color: #F2AA84;
+}
+
+.pasado {
+  background-color: #FBE3D6;
+}
+
+.UGM10     { background-color: #E67C73; }
+.UGM20     { background-color: #F2CD5C; }
+.UGM21     { background-color: #D4D4D4; }
+.UGM24     { background-color: #D96D9A; }
+.UGM30     { background-color: #6290C3; }
+.UGM40     { background-color: #76BA86; }
+.UGM0     { background-color: #f5f4f4c5; }
+
+/* Correa*/
+
+.correa {
+  width: 100%;
+  min-height: 15px;
+  background-color: #B7B7B7;
+  display: flex;
+  align-items: center;
+  color: #f9f9fc;
+  font-size: 0.90rem;
+  font-weight: bold;
+  justify-content: flex-end;
+  padding: 0 12px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+//Marcas mesas
+
+.regla-marcas {
+  display: grid;
+  grid-template-columns: repeat(var(--columnas, 15), minmax(0, 1fr)); // antes: repeat(15, ...)
+  gap: 2px;
+  height: 18px;
+  margin-bottom: 4px;
+
+  width: calc(var(--columnas, 15) / 15 * 100%); // nuevo
+  margin-inline: auto;                           // nuevo
+}
+
+.regla-marcas .marca {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  color: #333;
+  white-space: nowrap;
+
+  font-size: clamp(0.5rem, 1.4cqw, 1rem);
+}
+
+// Fin marcas mesas
+
+.paginacion {
+  display: flex;
+  justify-content: center;
+  gap: 5rem;
+  padding: 0.5rem 1rem;
 }

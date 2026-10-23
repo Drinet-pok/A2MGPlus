@@ -1,11 +1,32 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden; // Previene cualquier scroll en la ventana principal
+}
+
+app-navbar {
+  flex-shrink: 0; // El navbar conserva su padding
+}
+
 .layout-body {
   display: flex;
-  align-items: stretch;   // <- asegura que sidebar y contenido se estiren verticalmente por igual
-  min-height: calc(100vh - 4rem);
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;     
 }
+
+app-sidebar {
+  flex-shrink: 0;
+  width: 16rem;
+  overflow-y: auto;
+}
+
+
 
 .contenido {
   flex: 1;
-  padding: 1.5rem;
-  box-sizing: border-box;
+  min-width: 0;
+  padding: var(--space-lg);
+  overflow-y: auto; 
 }

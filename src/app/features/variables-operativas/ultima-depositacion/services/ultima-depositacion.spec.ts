@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { UltimaDepositacion } from './ultima-depositacion';
+import { UltimaDepositacionService } from './ultima-depositacion';
 
-describe('UltimaDepositacion', () => {
-  let service: UltimaDepositacion;
+describe('UltimaDepositacionService', () => {
+  let service: UltimaDepositacionService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(UltimaDepositacion);
+    service = TestBed.inject(UltimaDepositacionService);
   });
 
   it('should be created', () => {

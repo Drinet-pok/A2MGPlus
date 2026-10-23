@@ -2,21 +2,39 @@
 
 :root {
   --mdb-body-font-family: "Roboto", sans-serif;
+  --space-xs: 0.25rem; // 4px
+  --space-sm: 0.5rem; // 8px
+  --space-md: 1rem; // 16px
+  --space-lg: 1.5rem; // 24px
+  --space-xl: 2rem; // 32px
+
+  --radius: 0.5rem;
+  --container-max: 75rem; // 1200px
 }
 
 body {
   font-family: var(--mdb-body-font-family);
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  min-height: 100vh;
 }
 
-* {
+*, *::before, *::after {
   box-sizing: border-box;
 }
+
+
+
+
+
+
 
 button {
   font-family: inherit;
   font-size: inherit;
 }
 
-body {
-  margin: 0;  
+.leyenda H2 {
+  color: #368385;
 }

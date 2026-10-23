@@ -1,7 +1,5 @@
 import { AfterViewInit, Component, OnDestroy } from '@angular/core';
 import * as L from 'leaflet';
-import parseGeoraster from 'georaster';
-import GeoRasterLayer from 'georaster-layer-for-leaflet'; 
 
 @Component({
   selector: 'app-vista-aerea',
@@ -12,55 +10,88 @@ import GeoRasterLayer from 'georaster-layer-for-leaflet';
 export class VistaAerea implements AfterViewInit, OnDestroy {
   private map!: L.Map;
 
-async ngAfterViewInit() {
-  console.log('Iniciando mapa...');
-  this.map = L.map('map').setView([-38.73, -72.59], 10);
+  ngAfterViewInit() {
+    this.map = L.map('map').setView([-22.56224674938022, -69.85837921500206], 19);
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap',
-  }).addTo(this.map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap',
+    }).addTo(this.map);
 
-  try {
-    const respuesta = await fetch('ortofoto.tif');
-    if (!respuesta.ok) {
-      throw new Error(`No se pudo cargar el archivo: ${respuesta.status}`);
-    }
+    const bounds = L.latLngBounds([-22.594, -69.886], [-22.549, -69.838]);
 
-    const buffer = await respuesta.arrayBuffer();
-    const georaster = await parseGeoraster(buffer);
+    L.tileLayer('tiles3/{z}/{x}/{y}.png', {
+      minZoom: 14,
+      maxZoom: 20,
+      bounds: bounds,
+    }).addTo(this.map);
 
-    console.log('Bandas:', georaster.numberOfRasters);
-    console.log('Tamaño:', georaster.width, 'x', georaster.height);
-    console.log('Proyección:', georaster.projection);
-
-    console.log('Mínimos:', georaster.mins);
-    console.log('Máximos:', georaster.maxs);
-    console.log('NoData:', georaster.noDataValue);
-    console.log('Tipo:', georaster.values[0]?.constructor?.name);
-    
-
-      const capa = new GeoRasterLayer({
-        georaster,
-        opacity: 1,
-        resolution: 128,
-        pixelValuesToColorFn: (values: number[]) => {
-          const [r, g, b] = values;
-          // Alpha = banda 3: transparencia proporcional al valor de la banda 3
-          const alpha = b / 255;
-          return `rgba(${r},${g},${b},${alpha})`;
-        },
-      });
-    capa.addTo(this.map);
-
-    // Centrar sobre la ortofoto
-    const bounds = capa.getBounds();
-    console.log('Bounds:', bounds);
-    this.map.fitBounds(bounds);
-  } catch (error) {
-    console.error('Error cargando la ortofoto:', error);
+    /*this.cargarRastro();*/
   }
+/*
+private cargarRastro() {
+  fetch('https://apps.emt.cl/api/posicion2/registros')
+    .then((res) => res.json())
+    .then((geojson) => {
+      let features = [...geojson.features].sort(
+        (a: any, b: any) =>
+          new Date(a.properties.fecha).getTime() - new Date(b.properties.fecha).getTime()
+      );
+
+      features = features.filter((_, index) => index % 50 === 0);
+
+      console.log('Puntos después de reducir:', features.length);
+
+      if (features.length < 2) return;
+
+      const fechaMin = new Date(features[0].properties.fecha).getTime();
+      const fechaMax = new Date(features[features.length - 1].properties.fecha).getTime();
+      const rangoFechas = fechaMax - fechaMin || 1;
+
+      for (let i = 0; i < features.length - 1; i++) {
+        const puntoA = features[i].geometry.coordinates;
+        const puntoB = features[i + 1].geometry.coordinates;
+        const fechaPunto = new Date(features[i].properties.fecha).getTime();
+        const antiguedad = (fechaPunto - fechaMin) / rangoFechas;
+
+        L.polyline(
+          [
+            [puntoA[1], puntoA[0]],
+            [puntoB[1], puntoB[0]],
+          ],
+          {
+            color: this.colorPorAntiguedad(antiguedad),
+            weight: 8,
+            opacity: 0.9,
+          }
+        ).addTo(this.map);
+      }
+
+      const ultimoPunto = features[features.length - 1].geometry.coordinates;
+      L.circleMarker([ultimoPunto[1], ultimoPunto[0]], {
+        radius: 9,
+        fillColor: '#ff0000',
+        color: '#fff',
+        weight: 2,
+        fillOpacity: 1,
+      })
+        .addTo(this.map)
+        .bindPopup('Posición actual');
+    })
+    .catch((err) => console.error('Error cargando rastro:', err));
 }
 
+private colorPorAntiguedad(antiguedad: number): string {
+  // Celeste tenue (viejo) -> Celeste intenso/saturado (reciente)
+  const colorViejo = { r: 200, g: 230, b: 255 };  // celeste muy pálido
+  const colorReciente = { r: 0, g: 140, b: 255 }; // celeste fuerte/saturado
+
+  const r = Math.round(colorViejo.r + (colorReciente.r - colorViejo.r) * antiguedad);
+  const g = Math.round(colorViejo.g + (colorReciente.g - colorViejo.g) * antiguedad);
+  const b = Math.round(colorViejo.b + (colorReciente.b - colorViejo.b) * antiguedad);
+
+  return `rgb(${r},${g},${b})`;
+}
+*/
   ngOnDestroy() {
     this.map?.remove();
   }

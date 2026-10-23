@@ -1,6 +1,6 @@
 
 export interface RegistroDepositacion {
-  fecha: string;               // '2023-04-06' (ISO) o 'DD-MM-YYYY', a definir formato final
+  fecha: string;              
   modulo: number;               
   ugm: {
     valor10: number;
@@ -15,10 +15,12 @@ export interface RegistroDepositacion {
     sulf: number;
   };
   granulometria200: number;    
-  estrategiaRiego: string;     // ej: 'Continuo'
+  estrategiaRiego: string;     
   tiempoDrenajeDias: number;
-  mesa: string;                 // ej: 'cabezal a 310' — TODO: migrar a number cuando se estandarice
-  lugar: string;                // ej: 'Cordillera', 'Barranco'
+  mesa: number;                 // ej: 'cabezal a 310' 
+  lugar: string;               
   comportamiento: 'EA' | 'EM' | 'EB';
   ciclo: number;
 }
+
+export type RegistroConDias = RegistroDepositacion & { dias: number };
