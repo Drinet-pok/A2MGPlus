@@ -9,7 +9,7 @@ export const REGISTROS_DEPOSITACION_MOCK: RegistroDepositacion[] = [
     granulometria200: 12.45,
     estrategiaRiego: 'Continuo',
     tiempoDrenajeDias: 11,
-    mesa: 240,
+    mesa: 231,
     lugar: 'Barranco',
     comportamiento: 'EA',
     ciclo: 41

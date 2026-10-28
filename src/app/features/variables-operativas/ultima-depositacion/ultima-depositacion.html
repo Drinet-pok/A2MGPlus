@@ -1,8 +1,9 @@
 <div class="page-container">
 
     <app-info-diaria></app-info-diaria>
-    <app-condicion-mesas [mesas]="registroPorBloques()" [posicion]="seccionActual()" [seleccionada]="seccionActiva()"
-        (seccionClick)="seleccionarSeccion($event)" [(filtro)]="filtro"></app-condicion-mesas>
+    <app-condicion-mesas [mesas]="registroPorBloques()" [posicion]="bloqueActual()" [seleccionada]="bloqueActivo()"
+        (seccionClick)="seleccionarBloque($event)" [(filtro)]="filtro"
+        [grietas]="grietasPorBloque()"></app-condicion-mesas>
 
     @if (expandido()) {
     <app-georreferencia></app-georreferencia>
@@ -11,9 +12,22 @@
 
     <div class="detalles">
 
-        
+
         <div class="leyenda">
             <h2>Detalles</h2>
+
+            <div class="comportamiento">
+                <span>
+                    <span class="sub-leyenda">EA:</span> Escurrimiento Alto
+                </span>
+                <span>
+                    <span class="sub-leyenda">EM:</span> :Escurrimiento Medio
+                </span>
+                <span>
+                    <span class="sub-leyenda">EB:</span> Escurrimiento Bajo
+                </span>
+            </div>
+
         </div>
 
 
@@ -35,20 +49,49 @@
                     </div>
                     <ng-template #casillas>
                         <div class="cuadricula" [style.--columnas]="mesasIndividuales().length">
-                            @for (celda of celdasSeccion(); track celda.numeroMesa) {
+                            @for (celda of casillasBloque(); track celda.numeroMesa) {
                             @if (celda.registro; as reg) {
-                            <div class="item" [class]="getClaseColor(reg)">
+                            <div class="item" [class]="obtenerColorClase(reg)">
+                                @if (mesasConGrieta().has(celda.numeroMesa)) {
+                                <svg class="grietas" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 18h.01" />
+                                    <path d="m13.41 10.59 5.66-5.66" />
+                                    <path d="M16.24 7.76A6 6 0 1 0 8.23 16.67" />
+                                    <path d="M17.99 11.66A6 6 0 0 1 15.77 16.67" />
+                                    <path d="M19.07 4.93A10 10 0 0 0 6.99 3.34" />
+                                    <path d="M2.29 9.62A10 10 0 1 0 21.31 8.35" />
+                                    <path d="M4 6h.01" />
+                                    <circle cx="12" cy="12" r="2" />
+                                </svg>
+                                }
                                 @if(filtro().tipoDato === 'Ultima Depositación') {
                                 <h4>M{{ reg.modulo }}-T{{ reg.ciclo }}</h4>
                                 }@else if (filtro().tipoDato === 'UGM') {
                                 <h4>UGM{{celda.ugmTipo}}<wbr>{{celda.ugmMax}}%</h4>
                                 }@else if (filtro().tipoDato === 'Granulometría') {
                                 <h4>G{{ reg.granulometria200 }}</h4>
+
                                 }
                             </div>
                             } @else {
                             <div class="item UGM0">
                                 <h4>--</h4>
+                                @if (mesasConGrieta().has(celda.numeroMesa)) {
+                                <svg class="grietas" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 18h.01" />
+                                    <path d="m13.41 10.59 5.66-5.66" />
+                                    <path d="M16.24 7.76A6 6 0 1 0 8.23 16.67" />
+                                    <path d="M17.99 11.66A6 6 0 0 1 15.77 16.67" />
+                                    <path d="M19.07 4.93A10 10 0 0 0 6.99 3.34" />
+                                    <path d="M2.29 9.62A10 10 0 1 0 21.31 8.35" />
+                                    <path d="M4 6h.01" />
+                                    <circle cx="12" cy="12" r="2" />
+                                </svg>
+                                }
                             </div>
                             }
                             }
@@ -61,11 +104,11 @@
                         <div class="correa">Correa 21 - Carretera 42 A</div>
                     </ng-template>
 
-                    
 
-                    @if (selectorSeccion().fin === selectorSeccion().inicio) {
+
+                    @if (rangoDetalleBloque().fin === rangoDetalleBloque().inicio) {
                     <ng-container *ngTemplateOutlet="casillas" />
-                    }@else if (lugarSeccion() === 'barranco') {
+                    }@else if (lugarBloque() === 'barranco') {
                     <ng-container *ngTemplateOutlet="correa" />
                     <ng-container *ngTemplateOutlet="casillas" />
                     } @else {
@@ -76,38 +119,55 @@
                 </div>
             </div>
 
-            <div class="tabla-scroll">
+            <div class="tabla-scroll" [class.expandido]="!expandido()">
                 <table class="tabla-detalles">
                     <thead>
                         <tr>
-                            <th rowspan="2">Fecha</th>
-                            <th rowspan="2">Mesa</th>
+                            <th rowspan="2" class="ordenable" (click)="ordenarPor('fecha')">Fecha {{ indicador('fecha')
+                                }}</th>
+                            <th rowspan="2" class="ordenable" (click)="ordenarPor('modulo')">Módulo {{
+                                indicador('modulo') }}</th>
                             <th colspan="6">UGM (%)</th>
                             <th colspan="2">Composición (%)</th>
-                            <th rowspan="2">Granulometría #200</th>
-                            <th rowspan="2">Estrategia de riego</th>
-                            <th rowspan="2">Tiempo de drenaje (días)</th>
-                            <th rowspan="2">Módulo</th>
+                            <th rowspan="2" class="ordenable" (click)="ordenarPor('granulometria200')">Granulometría
+                                #200 {{ indicador('granulometria200') }}</th>
+                            <th rowspan="2" class="ordenable" (click)="ordenarPor('estrategiaRiego')">Estrategia de
+                                riego {{ indicador('estrategiaRiego') }}</th>
+                            <th rowspan="2" class="ordenable" (click)="ordenarPor('tiempoDrenajeDias')">Tiempo de
+                                drenaje (días) {{ indicador('tiempoDrenajeDias') }}</th>
+                            <th rowspan="2" class="ordenable" (click)="ordenarPor('mesa')">Mesa {{ indicador('mesa') }}
+                            </th>
                             <th rowspan="2">Lugar</th>
-                            <th rowspan="2">Comportamiento</th>
-                            <th rowspan="2">Ciclo</th>
+                            <th rowspan="2" class="ordenable" (click)="ordenarPor('comportamiento')">Comportamiento <br>
+                                EA(Escurrimiento Alto)<br> EM(Escurrimiento Medio) <br> EB(Escurrimiento Bajo){{
+                                indicador('comportamiento') }}</th>
+                            <th rowspan="2" class="ordenable" (click)="ordenarPor('ciclo')">Ciclo {{ indicador('ciclo')
+                                }}</th>
                         </tr>
                         <tr>
-                            <th>10</th>
-                            <th>20</th>
-                            <th>21</th>
-                            <th>24</th>
-                            <th>30</th>
-                            <th>40</th>
-                            <th>OVN</th>
-                            <th>SULF</th>
+                            <th class="ordenable" (click)="ordenarPor('ugm.valor10')">10 {{ indicador('ugm.valor10') }}
+                            </th>
+                            <th class="ordenable" (click)="ordenarPor('ugm.valor20')">20 {{ indicador('ugm.valor20') }}
+                            </th>
+                            <th class="ordenable" (click)="ordenarPor('ugm.valor21')">21 {{ indicador('ugm.valor21') }}
+                            </th>
+                            <th class="ordenable" (click)="ordenarPor('ugm.valor24')">24 {{ indicador('ugm.valor24') }}
+                            </th>
+                            <th class="ordenable" (click)="ordenarPor('ugm.valor30')">30 {{ indicador('ugm.valor30') }}
+                            </th>
+                            <th class="ordenable" (click)="ordenarPor('ugm.valor40')">40 {{ indicador('ugm.valor40') }}
+                            </th>
+                            <th class="ordenable" (click)="ordenarPor('composicion.ovn')">OVN {{
+                                indicador('composicion.ovn') }}</th>
+                            <th class="ordenable" (click)="ordenarPor('composicion.sulf')">SULF {{
+                                indicador('composicion.sulf') }}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @for (registro of registrosPaginados(); track $index) {
+                        @for (registro of mesasOrdenadas(); track $index) {
                         <tr>
                             <td>{{ registro.fecha }}</td>
-                            <td>{{ registro.mesa }}</td>
+                            <td>{{ registro.modulo }}</td>
                             <td>{{ registro.ugm.valor10 }}%</td>
                             <td>{{ registro.ugm.valor20 }}%</td>
                             <td>{{ registro.ugm.valor21 }}%</td>
@@ -119,7 +179,7 @@
                             <td>{{ registro.granulometria200 }}</td>
                             <td>{{ registro.estrategiaRiego }}</td>
                             <td>{{ registro.tiempoDrenajeDias }}</td>
-                            <td>{{ registro.modulo }}</td>
+                            <td>{{ registro.mesa }}</td>
                             <td>{{ registro.lugar }}</td>
                             <td>{{ registro.comportamiento }}</td>
                             <td>{{ registro.ciclo }}</td>
@@ -129,6 +189,7 @@
                 </table>
             </div>
 
+            <!-- Este es un comentario en HTML 
             <div class="paginacion">
                 <button class="btn btn-primary" (click)="paginaAnterior()"
                     [disabled]="paginaActual() === 1">Anterior</button>
@@ -136,6 +197,7 @@
                 <button class="btn btn-secondary" (click)="paginaSiguiente()"
                     [disabled]="paginaActual() === totalPaginas()">Siguiente</button>
             </div>
+            -->
         </div>
     </div>
 </div>

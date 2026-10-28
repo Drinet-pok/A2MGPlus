@@ -8,6 +8,28 @@
   gap: var(--space-xl);
 }
 
+.leyenda {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15vh;
+  padding: 10px 10px;
+}
+
+.sub-leyenda {
+  gap: 20px;
+  font-weight: bold;
+}
+
+.comportamiento {
+  display: flex;
+  gap: 1rem;
+}
+
+
+
 .detalles {
   display: flex;
   flex-direction: column;
@@ -16,7 +38,12 @@
 }
 
 .tabla-scroll {
-  overflow-x: auto;
+  max-height: 20vh;
+  overflow: auto;
+
+  &.expandido {
+    max-height: 73vh; // tamaño expandido
+  }
 }
 
 .contenedor-tabla-detalles {
@@ -33,7 +60,8 @@
   position: absolute;
   top: 10px;
   right: 10px;
-  z-index: 5;                  /* para que quede por encima del contenido */
+  z-index: 5;
+  /* para que quede por encima del contenido */
   background: transparent;
   border: none;
   cursor: pointer;
@@ -42,28 +70,41 @@
 
 .tabla-detalles {
   width: 100%;
-  border-collapse: collapse; // evita el doble borde entre celdas adyacentes
+  border-collapse: separate; // antes: collapse
+  border-spacing: 0;
   font-size: 0.85rem;
+  border-top: 1px solid #dee2e6;
+  border-left: 1px solid #dee2e6;
 
   th,
   td {
-    border: 1px solid #dee2e6;
+    border-right: 1px solid #dee2e6; // antes: border en los 4 lados
+    border-bottom: 1px solid #dee2e6;
     padding: 0.5rem 0.75rem;
-    text-align: center; // esto centra el contenido horizontalmente
-    vertical-align: middle; // esto centra verticalmente (útil para las celdas con rowspan)
-    white-space: nowrap; // evita que el texto de los headers se corte en varias líneas
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
   }
 
   thead th {
     background-color: #f1f3f5;
     font-weight: 600;
+    position: sticky; // encabezado fijo
+    z-index: 1;
+  }
+
+  thead tr:first-child th {
+    top: 0;
+  }
+
+  thead tr:nth-child(2) th {
+    top: 37px; // altura de la primera fila (ver nota)
   }
 
   tbody tr:hover {
     background-color: #f8f9fa;
   }
 }
-
 
 
 .contenedor-cuadricula {
@@ -97,6 +138,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 .item h4 {
@@ -116,13 +158,33 @@
   background-color: #FBE3D6;
 }
 
-.UGM10     { background-color: #E67C73; }
-.UGM20     { background-color: #F2CD5C; }
-.UGM21     { background-color: #D4D4D4; }
-.UGM24     { background-color: #D96D9A; }
-.UGM30     { background-color: #6290C3; }
-.UGM40     { background-color: #76BA86; }
-.UGM0     { background-color: #f5f4f4c5; }
+.UGM10 {
+  background-color: #E67C73;
+}
+
+.UGM20 {
+  background-color: #F2CD5C;
+}
+
+.UGM21 {
+  background-color: #D4D4D4;
+}
+
+.UGM24 {
+  background-color: #D96D9A;
+}
+
+.UGM30 {
+  background-color: #6290C3;
+}
+
+.UGM40 {
+  background-color: #76BA86;
+}
+
+.UGM0 {
+  background-color: #f5f4f4c5;
+}
 
 /* Correa*/
 
@@ -151,7 +213,7 @@
   margin-bottom: 4px;
 
   width: calc(var(--columnas, 15) / 15 * 100%); // nuevo
-  margin-inline: auto;                           // nuevo
+  margin-inline: auto; // nuevo
 }
 
 .regla-marcas .marca {
@@ -172,4 +234,21 @@
   justify-content: center;
   gap: 5rem;
   padding: 0.5rem 1rem;
+}
+
+th.ordenable {
+  cursor: pointer;
+  user-select: none;
+}
+
+th.ordenable:hover {
+  text-decoration: underline;
+}
+
+
+.grietas {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  color: red;
 }

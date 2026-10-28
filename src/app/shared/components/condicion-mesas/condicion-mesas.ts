@@ -8,6 +8,7 @@ export interface FiltroDatos {
   desde: string;
   hasta: string;
   tipoDato: string;
+  tipoResumen: string;
 }
 
 @Component({
@@ -32,11 +33,13 @@ export class CondicionMesas {
   seleccionada = input<number | null>(null);   // sección activa (1-44)
   seccionClick = output<number>();
 
+  grietas = input<number[]>();
+
   // Filtro
   filtro = model.required<FiltroDatos>();
   tiposDato = ['Ultima Depositación', 'UGM', 'Granulometría'];
   mostrarFiltros = signal(false);
-  borrador = signal<FiltroDatos>({ periodo: 'semana', desde: '', hasta: '', tipoDato: '' });
+  borrador = signal<FiltroDatos>({ periodo: 'semana', desde: '', hasta: '', tipoDato: '', tipoResumen: ''});
 
   abrir() {
     this.borrador.set({ ...this.filtro() }); // arranca con lo aplicado

@@ -3,6 +3,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { UltimaDepositacionService } from './services/ultima-depositacion';
 import { RegistroDepositacion, RegistroConDias } from './models/registro-depositacion.model';
 import { PosicionEsparcidor } from './models/posicion-esparcidor.model';
+import { Grietas } from './models/grietas.models'
 
 import { InfoDiaria } from '../../../shared/components/info-diaria/info-diaria';
 import { CondicionMesas, FiltroDatos } from '../../../shared/components/condicion-mesas/condicion-mesas';
@@ -15,6 +16,18 @@ interface BloqueRegistro {
   ugmClave: number; // 24, 30, etc.
   granulometria: number;
 }
+
+const MESAS_POR_BLOQUE = 15;
+const BLOQUES_POR_LUGAR = 22;
+const TOTAL_BLOQUES = BLOQUES_POR_LUGAR * 2 + 1; // 45: el último es el bloque especial
+const MESA_GIRO = 331;
+
+type Columna =
+  | 'fecha' | 'mesa' | 'modulo' | 'lugar' | 'ciclo' | 'comportamiento'
+  | 'granulometria200' | 'estrategiaRiego' | 'tiempoDrenajeDias'
+  | 'ugm.valor10' | 'ugm.valor20' | 'ugm.valor21'
+  | 'ugm.valor24' | 'ugm.valor30' | 'ugm.valor40'
+  | 'composicion.ovn' | 'composicion.sulf';
 
 @Component({
   selector: 'app-ultima-depositacion',
@@ -29,12 +42,12 @@ export class UltimaDepositacion implements OnInit {
 
   registrosPaginados = computed(() => {
     const inicio = (this.paginaActual() - 1) * this.registrosPorPagina();
-    return this.mesasSeccion().slice(inicio, inicio + this.registrosPorPagina());
+    return this.mesasOrdenadas().slice(inicio, inicio + this.registrosPorPagina());
   });
 
-  totalPaginas = computed(() => {
-    return Math.ceil(this.mesasSeccion().length / this.registrosPorPagina());
-  });
+  totalPaginas = computed(() =>
+    Math.ceil(this.mesasOrdenadas().length / this.registrosPorPagina())
+  );
 
   paginaSiguiente() {
     if (this.paginaActual() < this.totalPaginas()) this.paginaActual.update(p => p + 1);
@@ -60,6 +73,7 @@ export class UltimaDepositacion implements OnInit {
     desde: '',
     hasta: '',
     tipoDato: 'Ultima Depositación',
+    tipoResumen: 'Valor prioritario'
   });
 
   private readonly diasPorPeriodo = { semana: 7, mes: 30, shifting: 360 };
@@ -97,6 +111,8 @@ export class UltimaDepositacion implements OnInit {
     const { periodo, desde, hasta } = this.filtro();
     const todos = this.registroConDias();
 
+    todos.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
+
     // Período rápido: semana / mes / shifting
     if (periodo) {
       const maxDias = this.diasPorPeriodo[periodo];
@@ -110,8 +126,9 @@ export class UltimaDepositacion implements OnInit {
     });
   });
 
+
   registroPorBloques = computed(() => {
-    const bloques: BloqueRegistro[] = Array.from({ length: 45 }, () => ({
+    const bloques: BloqueRegistro[] = Array.from({ length: TOTAL_BLOQUES }, () => ({
       dias: Infinity,
       ugm: -Infinity,
       ugmClave: 0,
@@ -127,7 +144,7 @@ export class UltimaDepositacion implements OnInit {
       else if (r.lugar === 'Barranco') fila = 1;
       else continue;
 
-      const i = fila * 22 + columna;
+      const i = fila * BLOQUES_POR_LUGAR + columna;
 
       if (r.dias < bloques[i].dias) bloques[i].dias = r.dias;
       if (r.granulometria200 > bloques[i].granulometria) bloques[i].granulometria = r.granulometria200;
@@ -157,8 +174,9 @@ export class UltimaDepositacion implements OnInit {
       1, 1, 2, 2, 2, 3, 4, 4, 4, 4, 5, 5, 5, 6, 6
     ];
   
-
-
+  mesasDetalle = computed(() => Math.ceil(this.mesas.length));
+  */
+  // BORRAR
 
   obtenerColorClase(reg: RegistroConDias): string {
     const maxUgm = Object.entries(reg.ugm).reduce(
@@ -176,11 +194,6 @@ export class UltimaDepositacion implements OnInit {
       this.filtro().tipoDato
     );
   }
-
-  
-  mesasDetalle = computed(() => Math.ceil(this.mesas.length));
-  */
-  // BORRAR
 
   posicionEsparcidor = signal<PosicionEsparcidor[]>([]);
   cargandoPosicionEsparcidor = signal(true);
@@ -208,25 +221,55 @@ export class UltimaDepositacion implements OnInit {
     return indice + 1 + offset;
   });
 
+  grietas = signal<Grietas[]>([]);
+
+  grietasSemana = computed(() =>
+    this.grietas().filter(g => Math.abs(this.calcularDias(g.fecha)) <= 7)
+  );
+
+  grietasPorBloque = computed(() => {
+    const bloques: number[] = new Array(TOTAL_BLOQUES).fill(0);
+
+    for (const g of this.grietasSemana()) {
+      // Bloque especial (último índice)
+      if (g.mesa === MESA_GIRO) {
+        bloques[TOTAL_BLOQUES - 1] = 1;
+        continue;
+      }
+
+      const columna = Math.max(0, Math.ceil(g.mesa / MESAS_POR_BLOQUE) - 1);
+
+      let fila: number;
+      if (g.lugar === 'Cordillera') fila = 0;
+      else if (g.lugar === 'Barranco') fila = 1;
+      else continue;
+
+      bloques[fila * BLOQUES_POR_LUGAR + columna] = 1;
+    }
+
+    return bloques;
+  });
 
   //--------------------------------//
 
-  seccionSeleccionada = signal<number | null>(null);
+  bloqueSeleccionado = signal<number | null>(null);
 
-  seccionActiva = computed<number | null>(
-    () => this.seccionSeleccionada() ?? this.bloqueActual()
+  bloqueActivo = computed<number | null>(
+    () => this.bloqueSeleccionado() ?? this.bloqueActual()
   );
 
-  seleccionarSeccion(numero: number) {
-    this.seccionSeleccionada.set(numero);
+
+  seleccionarBloque(numero: number) {
+    this.bloqueSeleccionado.set(numero);
   }
+
 
   volverAUltimaPosicion() {
-    this.seccionSeleccionada.set(null);
+    this.bloqueSeleccionado.set(null);
   }
 
-  lugarSeccion = computed<string | null>(() => {
-    const s = this.seccionActiva();
+  lugarBloque = computed<string | null>(() => {
+    const s = this.bloqueActivo();
     if (s === null) return null;
     return s > 22 ? 'barranco' : 'cordillera';
   });
@@ -234,27 +277,25 @@ export class UltimaDepositacion implements OnInit {
 
   //--------------------------------//
 
-
-
-  selectorSeccion = computed(() => {
-    let seccion = this.seccionActiva();
+  rangoDetalleBloque = computed(() => {
+    let seccion = this.bloqueActivo();
     if (seccion === null) return { inicio: 0, fin: 0 };
-    if (seccion === 45) return { inicio: 331, fin: 331 };
+    if (seccion === TOTAL_BLOQUES) return { inicio: 331, fin: 331 };
 
     if (seccion > 22) seccion -= 22;
 
-    return { inicio: seccion * 15 - 14, fin: seccion * 15 };
+    return { inicio: seccion * MESAS_POR_BLOQUE - (MESAS_POR_BLOQUE - 1), fin: seccion * MESAS_POR_BLOQUE };
   });
 
 
   mesasIndividuales = computed(() => {
-    const { inicio, fin } = this.selectorSeccion();
+    const { inicio, fin } = this.rangoDetalleBloque();
     return Array.from({ length: fin - inicio + 1 }, (_, i) => inicio + i);
   });
 
-  mesasSeccion = computed(() => {
-    const { inicio, fin } = this.selectorSeccion();
-    const lugar = this.lugarSeccion();
+  mesasBloque = computed(() => {
+    const { inicio, fin } = this.rangoDetalleBloque();
+    const lugar = this.lugarBloque();
     if (!lugar) return [];
 
     return this.registrosFiltrados().filter(r =>
@@ -264,9 +305,26 @@ export class UltimaDepositacion implements OnInit {
     );
   });
 
-  celdasSeccion = computed(() => {
-    const registros = this.mesasSeccion();
+  grietasBloque = computed(() => {
+    const { inicio, fin } = this.rangoDetalleBloque();
+    const lugar = this.lugarBloque();
+    if (!lugar) return [];
+
+    return this.grietasSemana().filter(r =>
+      r.mesa >= inicio &&
+      r.mesa <= fin &&
+      r.lugar.toLowerCase() === lugar
+    );
+  });
+
+  mesasConGrieta = computed(() =>
+    new Set(this.grietasBloque().map(g => g.mesa))
+  );
+
+  casillasBloque = computed(() => {
+    const registros = this.mesasBloque();
     const porGranulometria = this.filtro().tipoDato === 'Granulometría';
+    const grietas = this.grietasBloque();
 
     return this.mesasIndividuales().map(numeroMesa => {
       const delaMesa = registros.filter(r => r.mesa === numeroMesa);
@@ -288,7 +346,51 @@ export class UltimaDepositacion implements OnInit {
         ugmTipo = clave.replace('valor', '');    // ej: '24'
       }
 
-      return { numeroMesa, registro: elegido, ugmMax, ugmTipo };
+      return { numeroMesa, registro: elegido, ugmMax, ugmTipo, grietas };
+    });
+  });
+
+  ordenColumna = signal<Columna | null>(null);
+  ordenDireccion = signal<'asc' | 'desc'>('asc');
+
+  ordenarPor(columna: Columna) {
+    if (this.ordenColumna() === columna) {
+      this.ordenDireccion.update(d => d === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.ordenColumna.set(columna);
+      this.ordenDireccion.set('asc');
+    }
+    this.paginaActual.set(1);
+  }
+
+  indicador(columna: Columna) {
+    if (this.ordenColumna() !== columna) return '';
+    return this.ordenDireccion() === 'asc' ? '▲' : '▼';
+  }
+
+  valorDe(registro: any, ruta: string) {
+    return ruta.split('.').reduce((obj, clave) => obj?.[clave], registro);
+  }
+
+  mesasOrdenadas = computed(() => {
+    const columna = this.ordenColumna();
+    const lista = this.mesasBloque();
+
+    if (!columna) return lista;
+
+    const dir = this.ordenDireccion() === 'asc' ? 1 : -1;
+
+    return [...lista].sort((a, b) => {
+      const va = this.valorDe(a, columna);
+      const vb = this.valorDe(b, columna);
+
+      if (va == null) return 1;
+      if (vb == null) return -1;
+
+      if (typeof va === 'number' && typeof vb === 'number') return (va - vb) * dir;
+
+      return String(va).localeCompare(String(vb), 'es', { numeric: true }) * dir;
+
     });
   });
 
@@ -305,10 +407,14 @@ export class UltimaDepositacion implements OnInit {
       next: (datos) => {
         this.posicionEsparcidor.set(datos);
         this.cargandoPosicionEsparcidor.set(false);
-        console.log(this.celdasSeccion());
+        console.log(this.casillasBloque());
 
       },
       error: () => this.cargandoPosicionEsparcidor.set(false)
+    });
+
+    this.ultimaDepositacionService.obtenerGrietas().subscribe({
+      next: (datos) => this.grietas.set(datos),
     });
   }
 
