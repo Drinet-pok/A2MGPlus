@@ -37,6 +37,11 @@ type Columna =
 })
 export class UltimaDepositacion implements OnInit {
 
+  private readonly diasPorPeriodo = { semana: 7, mes: 30, shifting: 360 };
+
+  private ultimaDepositacionService = inject(UltimaDepositacionService);
+  /*
+ 
   paginaActual = signal(1);
   registrosPorPagina = signal(4);
 
@@ -56,15 +61,14 @@ export class UltimaDepositacion implements OnInit {
   paginaAnterior() {
     if (this.paginaActual() > 1) this.paginaActual.update(p => p - 1);
   }
-
+ */
   expandido = signal(true);
 
   alternarExpandido() {
-    const inicioActual = (this.paginaActual() - 1) * this.registrosPorPagina();
+    /*const inicioActual = (this.paginaActual() - 1) * this.registrosPorPagina();
     const nuevoTamano = this.expandido() ? 11 : 4;
-
     this.registrosPorPagina.set(nuevoTamano);
-    this.paginaActual.set(Math.floor(inicioActual / nuevoTamano) + 1);
+    this.paginaActual.set(Math.floor(inicioActual / nuevoTamano) + 1);*/
     this.expandido.update(valor => !valor);
   }
 
@@ -76,9 +80,7 @@ export class UltimaDepositacion implements OnInit {
     tipoResumen: 'Valor prioritario'
   });
 
-  private readonly diasPorPeriodo = { semana: 7, mes: 30, shifting: 360 };
 
-  private ultimaDepositacionService = inject(UltimaDepositacionService);
 
   registros = signal<RegistroDepositacion[]>([]);
   cargando = signal(true);
@@ -89,24 +91,22 @@ export class UltimaDepositacion implements OnInit {
     const hoy = new Date();
     const objetivo = new Date(fechaObjetivo);
 
-
     hoy.setHours(0, 0, 0, 0);
     objetivo.setHours(0, 0, 0, 0);
 
-
     const diferenciaMs = objetivo.getTime() - hoy.getTime();
 
-    // Convertir a días y redondear
     return Math.round(diferenciaMs / MS_POR_DIA);
   }
 
   registroConDias = computed(() =>
-    this.registros().map(registro => ({
+  this.registros()
+    .filter(registro => registro.mesa <= MESA_GIRO)
+    .map(registro => ({
       ...registro,
       dias: Math.abs(this.calcularDias(registro.fecha))
     }))
-  );
-
+);
   registrosFiltrados = computed(() => {
     const { periodo, desde, hasta } = this.filtro();
     const todos = this.registroConDias();
@@ -125,7 +125,6 @@ export class UltimaDepositacion implements OnInit {
       return (!desde || fecha >= desde) && (!hasta || fecha <= hasta);
     });
   });
-
 
   registroPorBloques = computed(() => {
     const bloques: BloqueRegistro[] = Array.from({ length: TOTAL_BLOQUES }, () => ({
@@ -360,7 +359,7 @@ export class UltimaDepositacion implements OnInit {
       this.ordenColumna.set(columna);
       this.ordenDireccion.set('asc');
     }
-    this.paginaActual.set(1);
+    /*this.paginaActual.set(1);*/
   }
 
   indicador(columna: Columna) {
@@ -407,7 +406,6 @@ export class UltimaDepositacion implements OnInit {
       next: (datos) => {
         this.posicionEsparcidor.set(datos);
         this.cargandoPosicionEsparcidor.set(false);
-        console.log(this.casillasBloque());
 
       },
       error: () => this.cargandoPosicionEsparcidor.set(false)

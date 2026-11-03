@@ -5,45 +5,10 @@ export const POSICION_ESPARCIDOR_MOCK: PosicionEsparcidor[] = [
     fecha: '2026-10-13T08:00:00Z',
     mesa: 240,
     lugar: 'Barranco',
-  },
-    {
-    fecha: '2026-10-13T08:30:00Z',
-    mesa: 240,
-    lugar: 'Barranco',
-  },
-    {
-    fecha: '2026-10-13T09:00:00Z',
-    mesa: 240,
-    lugar: 'Barranco',
-  },
-    {
-    fecha: '2026-10-13T09:30:00Z',
-    mesa: 240,
-    lugar: 'Barranco',
-  },
-    {
-    fecha: '2026-10-13T09:30:00Z',
-    mesa: 240,
-    lugar: 'Barranco',
-  },
-    {
-    fecha: '2026-10-13T10:00:00Z',
-    mesa: 240,
-    lugar: 'Barranco',
-  },
-    {
-    fecha: '2026-10-13T10:30:00Z',
-    mesa: 240,
-    lugar: 'Barranco',
-  },
-    {
-    fecha: '2026-10-13T11:00:00Z',
-    mesa: 240,
-    lugar: 'Barranco',
-  },
-    {
-    fecha: '2026-10-13T11:30:00Z',
-    mesa: 240,
-    lugar: 'Barranco',
+    latitud: -22.57356,
+    longitud: -69.87092,
+    este: 410650.178,
+    norte: 7503799.148,
+    cota: 1647.50
   },
 ];

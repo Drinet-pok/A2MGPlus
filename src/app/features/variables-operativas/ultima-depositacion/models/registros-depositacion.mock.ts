@@ -2,7 +2,7 @@ import { RegistroDepositacion } from '../models/registro-depositacion.model';
 
 export const REGISTROS_DEPOSITACION_MOCK: RegistroDepositacion[] = [
   {
-    fecha: '2026-10-22',
+    fecha: '2026-10-29',
     modulo: 6,
     ugm: { valor10: 0, valor20: 4, valor21: 14, valor24: 15, valor30: 37, valor40: 29 },
     composicion: { ovn: 66, sulf: 34 },
