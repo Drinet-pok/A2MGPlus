@@ -120,16 +120,16 @@
 .contenedor-cuadricula-correa {
   --lado-mesa: 5rem;
   width: 100%;
-  max-width: calc(15 * var(--lado-mesa) + 14 * 2px);
+  max-width: calc(10 * var(--lado-mesa) + 14 * 2px);
   container-type: inline-size;
 }
 
 .cuadricula {
   display: grid;
-  grid-template-columns: repeat(var(--columnas, 15), minmax(0, 1fr));
+  grid-template-columns: repeat(var(--columnas, 10), minmax(0, 1fr));
   gap: 2px;
 
-  width: calc(var(--columnas, 15) / 15 * 100%);
+  width: calc(var(--columnas, 10) / 10 * 100%);
   margin-inline: auto;
 }
 
@@ -207,12 +207,12 @@
 
 .regla-marcas {
   display: grid;
-  grid-template-columns: repeat(var(--columnas, 15), minmax(0, 1fr)); // antes: repeat(15, ...)
+  grid-template-columns: repeat(var(--columnas, 10), minmax(0, 1fr)); // antes: repeat(15, ...)
   gap: 2px;
   height: 18px;
   margin-bottom: 4px;
 
-  width: calc(var(--columnas, 15) / 15 * 100%); // nuevo
+  width: calc(var(--columnas, 10) / 10 * 100%); // nuevo
   margin-inline: auto; // nuevo
 }
 
@@ -224,7 +224,7 @@
   color: #333;
   white-space: nowrap;
 
-  font-size: clamp(0.5rem, 1.4cqw, 1rem);
+  font-size: clamp(0.5rem, 2.1cqw, 1rem);
 }
 
 // Fin marcas mesas

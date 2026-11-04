@@ -17,8 +17,8 @@ interface BloqueRegistro {
   granulometria: number;
 }
 
-const MESAS_POR_BLOQUE = 15;
-const BLOQUES_POR_LUGAR = 22;
+const MESAS_POR_BLOQUE = 10;
+const BLOQUES_POR_LUGAR = 330 / MESAS_POR_BLOQUE;
 const TOTAL_BLOQUES = BLOQUES_POR_LUGAR * 2 + 1; // 45: el último es el bloque especial
 const MESA_GIRO = 331;
 
@@ -89,7 +89,13 @@ export class UltimaDepositacion implements OnInit {
     const MS_POR_DIA = 1000 * 60 * 60 * 24;
 
     const hoy = new Date();
-    const objetivo = new Date(fechaObjetivo);
+    const objetivo = typeof fechaObjetivo === 'string'
+      ? new Date(
+        Number(fechaObjetivo.slice(0, 4)),
+        Number(fechaObjetivo.slice(5, 7)) - 1,
+        Number(fechaObjetivo.slice(8, 10))
+      )
+      : new Date(fechaObjetivo);
 
     hoy.setHours(0, 0, 0, 0);
     objetivo.setHours(0, 0, 0, 0);
@@ -100,13 +106,13 @@ export class UltimaDepositacion implements OnInit {
   }
 
   registroConDias = computed(() =>
-  this.registros()
-    .filter(registro => registro.mesa <= MESA_GIRO)
-    .map(registro => ({
-      ...registro,
-      dias: Math.abs(this.calcularDias(registro.fecha))
-    }))
-);
+    this.registros()
+      .filter(registro => registro.mesa <= MESA_GIRO)
+      .map(registro => ({
+        ...registro,
+        dias: Math.abs(this.calcularDias(registro.fecha))
+      }))
+  );
   registrosFiltrados = computed(() => {
     const { periodo, desde, hasta } = this.filtro();
     const todos = this.registroConDias();
@@ -135,7 +141,7 @@ export class UltimaDepositacion implements OnInit {
     }));
 
     for (const r of this.registrosFiltrados()) {
-      const columna = Math.max(0, Math.ceil(r.mesa / 15) - 1);
+      const columna = Math.max(0, Math.ceil(r.mesa / MESAS_POR_BLOQUE) - 1);
 
       let fila: number;
 
@@ -211,11 +217,11 @@ export class UltimaDepositacion implements OnInit {
     if (!pos) return null;
 
     const indice = Math.min(
-      22 - 1,
-      Math.max(0, Math.ceil(pos.mesa / 15) - 1)
+      BLOQUES_POR_LUGAR - 1,
+      Math.max(0, Math.ceil(pos.mesa / MESAS_POR_BLOQUE) - 1)
     );
 
-    const offset = pos.lugar.toLowerCase() === 'barranco' ? 22 : 0;
+    const offset = pos.lugar.toLowerCase() === 'barranco' ? BLOQUES_POR_LUGAR : 0;
 
     return indice + 1 + offset;
   });
@@ -270,7 +276,7 @@ export class UltimaDepositacion implements OnInit {
   lugarBloque = computed<string | null>(() => {
     const s = this.bloqueActivo();
     if (s === null) return null;
-    return s > 22 ? 'barranco' : 'cordillera';
+    return s > BLOQUES_POR_LUGAR ? 'barranco' : 'cordillera';
   });
 
 
@@ -281,7 +287,7 @@ export class UltimaDepositacion implements OnInit {
     if (seccion === null) return { inicio: 0, fin: 0 };
     if (seccion === TOTAL_BLOQUES) return { inicio: 331, fin: 331 };
 
-    if (seccion > 22) seccion -= 22;
+    if (seccion > BLOQUES_POR_LUGAR) seccion -= BLOQUES_POR_LUGAR;
 
     return { inicio: seccion * MESAS_POR_BLOQUE - (MESAS_POR_BLOQUE - 1), fin: seccion * MESAS_POR_BLOQUE };
   });

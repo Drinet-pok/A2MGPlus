@@ -6,6 +6,11 @@ import { vi } from 'vitest';
 import { RegistroDepositacion } from './models/registro-depositacion.model'
 import { REGISTROS_DEPOSITACION_MOCK } from './models/registros-depositacion.mock'
 
+import { of } from 'rxjs';
+import { UltimaDepositacionService } from './../../../features/variables-operativas/ultima-depositacion/services/ultima-depositacion';
+import { GRIETAS_MOCK } from './models/grietas.mock';
+import { POSICION_ESPARCIDOR_MOCK } from './models/posicion-esparcidor.mock';
+
 vi.mock('leaflet-rotate', () => ({}));
 
 describe('UltimaDepositacion', () => {
@@ -15,11 +20,23 @@ describe('UltimaDepositacion', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [UltimaDepositacion],
+
+      // AGREGA AQUÍ EL PASO 2
+      providers: [
+        {
+          provide: UltimaDepositacionService,
+          useValue: {
+            obtenerRegistros: () => of(REGISTROS_DEPOSITACION_MOCK),
+            obtenerPosiciones: () => of(POSICION_ESPARCIDOR_MOCK),
+            obtenerGrietas: () => of(GRIETAS_MOCK),
+          }
+        }
+      ]
+
     }).compileComponents();
 
     fixture = TestBed.createComponent(UltimaDepositacion);
     component = fixture.componentInstance;
-    await fixture.whenStable();
   });
 
   it('should create', () => {
@@ -60,7 +77,7 @@ describe('UltimaDepositacion', () => {
       .toISOString()
       .slice(0, 10);
 
-    component.seleccionarBloque(16);
+    component.seleccionarBloque(23);
 
     component.registros.set([
       {
@@ -120,7 +137,7 @@ describe('UltimaDepositacion', () => {
       .toISOString()
       .slice(0, 10);
 
-    component.seleccionarBloque(16);
+    component.seleccionarBloque(23);
 
     component.registros.set([
       {
@@ -176,13 +193,13 @@ describe('UltimaDepositacion', () => {
   });
 
   it('debería devolver 0 días para la fecha de hoy', () => {
-    const resultado = component.calcularDias('2026-11-02T09:00:00Z');
+    const resultado = component.calcularDias('2026-11-04T09:00:00Z');
 
     expect(resultado).toEqual(0);
   });
 
   it('debería devolver 1 días para la fecha de hoy', () => {
-    const resultado = component.calcularDias('2026-11-01 00:00:00');
+    const resultado = component.calcularDias('2026-11-03T09:00:00Z');
 
     expect(Math.abs(resultado)).toEqual(1);
   });
@@ -278,7 +295,7 @@ describe('UltimaDepositacion', () => {
   });
 
   it('deberia devolver UGM maximo', () => {
-    component.seleccionarBloque(16);
+    component.seleccionarBloque(24);
 
     const registro = {
       ...REGISTROS_DEPOSITACION_MOCK[0],
@@ -310,7 +327,7 @@ describe('UltimaDepositacion', () => {
   });
 
   it('deberia devolver UGM maximo que encuentra primero en caso de repetirse', () => {
-    component.seleccionarBloque(16);
+    component.seleccionarBloque(24);
 
     const registro = {
       ...REGISTROS_DEPOSITACION_MOCK[0],
@@ -348,15 +365,16 @@ describe('UltimaDepositacion', () => {
     haceDosDias.setDate(haceDosDias.getDate() - 2)
     haceCincoDias.setDate(haceCincoDias.getDate() - 5)
 
-    const fechaRegistro = haceDosDias.toISOString().slice(0, 10);
-    const fechaRegistro5 = haceCincoDias.toISOString().slice(0, 10);
-    component.seleccionarBloque(16);
+    const fechaRegistro = `${haceDosDias.getFullYear()}-${String(
+      haceDosDias.getMonth() + 1
+    ).padStart(2, '0')}-${String(haceDosDias.getDate()).padStart(2, '0')}`; const fechaRegistro5 = haceCincoDias.toISOString().slice(0, 10);
+    component.seleccionarBloque(24);
 
     const registro = [{
       ...REGISTROS_DEPOSITACION_MOCK[0],
       mesa: 240,
       lugar: 'cordillera',
-      fecha: '2026-11-02',
+      fecha: fechaRegistro,
       ugm: {
         valor10: 25,
         valor20: 12,
@@ -397,6 +415,72 @@ describe('UltimaDepositacion', () => {
     expect(casilla?.registro?.dias).toBe(2);
 
   });
+
+  it('deberia seleccionar el registro con mayor granulometria', () => {
+
+    // 1. Crear dos registros para la misma mesa.
+    const registros = [
+      {
+        ...REGISTROS_DEPOSITACION_MOCK[0],
+        mesa: 240,
+        lugar: 'cordillera',
+        granulometria200: 35
+      },
+      {
+        ...REGISTROS_DEPOSITACION_MOCK[1],
+        mesa: 240,
+        lugar: 'cordillera',
+        granulometria200: 65
+      }
+    ];
+
+    component.registros.set(registros);
+
+    component.filtro.update(f => ({
+      ...f,
+      tipoDato: 'Granulometría',
+      periodo: null
+    }));
+
+    component.seleccionarBloque(24);
+
+    const resultado = component.casillasBloque();
+    const casilla = resultado.find(c => c.numeroMesa === 240);
+
+    expect(casilla?.registro?.granulometria200).toBe(65);
+
+  });
+
+  it('deberia devolver null cuando la mesa no tiene registros', () => {
+
+    // 1. Crear dos registros para la misma mesa.
+    const registros = [
+      {
+        ...REGISTROS_DEPOSITACION_MOCK[0],
+        mesa: 100,
+        lugar: 'cordillera'
+      }
+    ];
+
+    component.registros.set(registros);
+
+    component.filtro.update(f => ({
+      ...f,
+      tipoDato: 'Granulometría',
+      periodo: null
+    }));
+
+    component.seleccionarBloque(24);
+
+    const resultado = component.casillasBloque();
+    const casilla = resultado.find(c => c.numeroMesa === 240);
+
+    expect(casilla?.registro).toBeNull();
+    expect(casilla?.ugmMax).toBeNull();
+    expect(casilla?.ugmTipo).toBeNull();
+
+  });
+
 
 
 

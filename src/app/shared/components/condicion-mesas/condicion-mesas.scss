@@ -79,7 +79,7 @@
 
 .regla-marcas {
   display: grid;
-  grid-template-columns: repeat(22, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--BLOQUES_POR_FILA), minmax(0, 1fr));
   gap: 2px;
   height: 18px;
   margin-bottom: 4px;
@@ -113,6 +113,7 @@
   transform: rotate(180deg);
   white-space: nowrap;
   color: #111;
+  font-size: clamp(4px, 0.65cqw, 0.85rem);
 }
 
 
@@ -121,17 +122,19 @@
   flex-direction: row;
   padding-inline: 10px;
   width: 100%;
+  container-type: inline-size;
 }
 
 .contenedor-cuadricula-correa{
   //flex:1;
   flex: 22 1 0; //cambio debido a item final
   min-width: 0;
+  
 }
 
 .cuadricula {
   display: grid;
-  grid-template-columns: repeat(22, minmax(0, 1fr)); 
+  grid-template-columns: repeat(var(--BLOQUES_POR_FILA), minmax(0, 1fr)); 
   gap: 2px;
 }
 
@@ -208,7 +211,7 @@
 }
 
 .item-final {
-  width: 60px;
+  width: 50px;
   flex-shrink: 0;
   margin-left: 2px;
   margin-top: 22px;

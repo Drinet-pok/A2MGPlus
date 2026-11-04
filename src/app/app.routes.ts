@@ -44,7 +44,7 @@ export const routes: Routes = [
           {
             path: 'ultima-depositacion',
             loadComponent: () =>
-              import('./features/variables-operativas/ultima-depositacion/ultima-depositacion').then(m => m.UltimaDepositacion)
+              import('./features/variables-operativas/variables-operativas').then(m => m.VariablesOperativas)
           }
         ]
       },
