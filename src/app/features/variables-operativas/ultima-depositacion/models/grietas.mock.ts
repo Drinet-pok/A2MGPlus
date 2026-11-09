@@ -7,7 +7,7 @@ export const GRIETAS_MOCK: Grietas[] = [
     lugar: 'Barranco',
   },
     {
-    fecha: '2026-10-25T08:30:00Z',
+    fecha: '2026-11-01T08:30:00Z',
     mesa: 241,
     lugar: 'Barranco',
   },

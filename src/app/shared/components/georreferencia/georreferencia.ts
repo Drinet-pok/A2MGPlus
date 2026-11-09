@@ -1,7 +1,8 @@
-import { AfterViewInit, Component, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, inject, OnDestroy } from '@angular/core';
 import * as L from 'leaflet';
 import 'leaflet-rotate';
 import { PosicionEsparcidor } from '../../../features/variables-operativas/ultima-depositacion/models/posicion-esparcidor.model';
+import { UltimaDepositacionService } from '../../../features/variables-operativas/ultima-depositacion/services/ultima-depositacion';
 
 @Component({
   selector: 'app-georreferencia',
@@ -13,16 +14,7 @@ export class Georreferencia implements AfterViewInit, OnDestroy {
   private map!: L.Map;
   private marcadorEsparcidor?: L.Marker;
 
-  private posicion: PosicionEsparcidor = {
-    fecha: '2026-10-13T08:00:00Z',
-    mesa: 240,
-    lugar: 'Barranco',
-    latitud: -22.567740,    // original -22.57356 (Δ +0.005820)
-    longitud: -69.864160,
-    este: 410650.178,
-    norte: 7503799.148,
-    cota: 1647.5,
-  };
+  private service = inject(UltimaDepositacionService);
 
   ngAfterViewInit() {
     this.map = L.map('map', {
@@ -44,7 +36,12 @@ export class Georreferencia implements AfterViewInit, OnDestroy {
       bounds: bounds,
     }).addTo(this.map);
 
-    this.agregarMarcadorEsparcidor(this.posicion);
+    this.service.obtenerPosiciones().subscribe(lista => {
+      const ultima = lista.reduce((a, b) =>
+        new Date(b.fecha).getTime() > new Date(a.fecha).getTime() ? b : a
+      );
+      this.agregarMarcadorEsparcidor(ultima);
+    });
 
     (window as any).map = this.map;
 

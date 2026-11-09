@@ -30,11 +30,11 @@ export const routes: Routes = [
       {
         path: 'variables-operativas',
         children: [
-          { path: '', redirectTo: 'nivel-freatico', pathMatch: 'full' },
+          { path: '', redirectTo: 'variable-operativa', pathMatch: 'full' },
           {
-            path: 'nivel-freatico',
+            path: 'variable-operativa',
             loadComponent: () =>
-              import('./features/variables-operativas/nivel-freatico/nivel-freatico').then(m => m.NivelFreatico)
+              import('./features/variables-operativas/variables-operativas').then(m => m.VariablesOperativas)
           },
           {
             path: 'humedad',
@@ -44,7 +44,7 @@ export const routes: Routes = [
           {
             path: 'ultima-depositacion',
             loadComponent: () =>
-              import('./features/variables-operativas/variables-operativas').then(m => m.VariablesOperativas)
+              import('./features/variables-operativas/ultima-depositacion/ultima-depositacion').then(m => m.UltimaDepositacion)
           }
         ]
       },

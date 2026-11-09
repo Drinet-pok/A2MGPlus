@@ -193,13 +193,13 @@ describe('UltimaDepositacion', () => {
   });
 
   it('debería devolver 0 días para la fecha de hoy', () => {
-    const resultado = component.calcularDias('2026-11-04T09:00:00Z');
+    const resultado = component.calcularDias('2026-11-05T09:00:00Z');
 
     expect(resultado).toEqual(0);
   });
 
   it('debería devolver 1 días para la fecha de hoy', () => {
-    const resultado = component.calcularDias('2026-11-03T09:00:00Z');
+    const resultado = component.calcularDias('2026-11-04T09:00:00Z');
 
     expect(Math.abs(resultado)).toEqual(1);
   });

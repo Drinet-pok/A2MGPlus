@@ -1,9 +1,9 @@
 <div class="page-container">
 
-    <app-info-diaria></app-info-diaria>
+    
     <app-condicion-mesas [mesas]="registroPorBloques()" [posicion]="bloqueActual()" [seleccionada]="bloqueActivo()"
-        (seccionClick)="seleccionarBloque($event)" [(filtro)]="filtro"
-        [grietas]="grietasPorBloque()"></app-condicion-mesas>
+        (seccionClick)="seleccionarBloque($event)" [(filtro)]="filtro" [grietas]="grietasPorBloque()">
+    </app-condicion-mesas>
 
     @if (expandido()) {
     <app-georreferencia></app-georreferencia>
@@ -139,7 +139,7 @@
                             </th>
                             <th rowspan="2">Lugar</th>
                             <th rowspan="2" class="ordenable" (click)="ordenarPor('comportamiento')">Comportamiento <br>
-                               {{
+                                {{
                                 indicador('comportamiento') }}</th>
                             <th rowspan="2" class="ordenable" (click)="ordenarPor('ciclo')">Ciclo {{ indicador('ciclo')
                                 }}</th>

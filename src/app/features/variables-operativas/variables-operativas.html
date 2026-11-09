@@ -1,3 +1,42 @@
-<div class="page-container">    
+<div class="page-container">
+
     <app-info-diaria></app-info-diaria>
+
+    <span class="selector-vistas">
+
+        <button [class.activo]="vistaActual() === 'depositacion'" (click)="cambiarVista('depositacion')">
+            Última depositación
+        </button>
+
+        <button [class.activo]="vistaActual() === 'humedad'" (click)="cambiarVista('humedad')">
+            Humedad
+        </button>
+
+        <button [class.activo]="vistaActual() === 'nivelFreatico'" (click)="cambiarVista('nivelFreatico')">
+            Nivel freático
+        </button>
+
+    </span>
+
+    <div class="contenido-vista">
+
+        @switch (vistaActual()) {
+
+        @case ('depositacion') {
+        <app-ultima-depositacion [bloqueActual]="bloqueActual()"></app-ultima-depositacion>
+        }
+
+        @case ('humedad') {
+        <p>Vista de humedad en construcción.</p>
+        }
+
+        @case ('nivelFreatico') {
+        <p>Vista de nivel freático en construcción.</p>
+        }
+
+        }
+
+    </div>
+
+    <app-georreferencia></app-georreferencia>
 </div>

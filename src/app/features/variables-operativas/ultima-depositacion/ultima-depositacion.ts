@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, OnInit } from '@angular/core';
+import { Component, computed, inject, signal, OnInit, input } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { UltimaDepositacionService } from './services/ultima-depositacion';
 import { RegistroDepositacion, RegistroConDias } from './models/registro-depositacion.model';
@@ -31,7 +31,7 @@ type Columna =
 
 @Component({
   selector: 'app-ultima-depositacion',
-  imports: [InfoDiaria, CondicionMesas, Georreferencia, NgTemplateOutlet],
+  imports: [CondicionMesas, Georreferencia, NgTemplateOutlet],
   templateUrl: './ultima-depositacion.html',
   styleUrl: './ultima-depositacion.scss',
 })
@@ -200,31 +200,7 @@ export class UltimaDepositacion implements OnInit {
     );
   }
 
-  posicionEsparcidor = signal<PosicionEsparcidor[]>([]);
-  cargandoPosicionEsparcidor = signal(true);
-
-  ultimaPosicionEsparcidor = computed(() => {
-    const lista = this.posicionEsparcidor();
-    if (lista.length === 0) return null;
-
-    return lista.reduce((ultima, actual) =>
-      new Date(actual.fecha).getTime() > new Date(ultima.fecha).getTime() ? actual : ultima
-    );
-  });
-
-  bloqueActual = computed<number | null>(() => {
-    const pos = this.ultimaPosicionEsparcidor();
-    if (!pos) return null;
-
-    const indice = Math.min(
-      BLOQUES_POR_LUGAR - 1,
-      Math.max(0, Math.ceil(pos.mesa / MESAS_POR_BLOQUE) - 1)
-    );
-
-    const offset = pos.lugar.toLowerCase() === 'barranco' ? BLOQUES_POR_LUGAR : 0;
-
-    return indice + 1 + offset;
-  });
+  bloqueActual = input<number | null>(null);
 
   grietas = signal<Grietas[]>([]);
 
@@ -406,15 +382,6 @@ export class UltimaDepositacion implements OnInit {
         this.cargando.set(false);
       },
       error: () => this.cargando.set(false)
-    });
-
-    this.ultimaDepositacionService.obtenerPosiciones().subscribe({
-      next: (datos) => {
-        this.posicionEsparcidor.set(datos);
-        this.cargandoPosicionEsparcidor.set(false);
-
-      },
-      error: () => this.cargandoPosicionEsparcidor.set(false)
     });
 
     this.ultimaDepositacionService.obtenerGrietas().subscribe({
