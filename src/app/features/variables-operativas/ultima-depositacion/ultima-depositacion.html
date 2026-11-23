@@ -1,14 +1,205 @@
 <div class="page-container">
 
-    
-    <app-condicion-mesas [mesas]="registroPorBloques()" [posicion]="bloqueActual()" [seleccionada]="bloqueActivo()"
-        (seccionClick)="seleccionarBloque($event)" [(filtro)]="filtro" [grietas]="grietasPorBloque()">
+    <app-condicion-mesas [mesas]="bloquesVisuales()" [posicion]="bloqueActual()" [seleccionada]="bloqueActivo()"
+        (seccionClick)="seleccionarBloque($event)" [grietas]="grietasPorBloque()" (abrirPanel)="copiarFiltro()" (aplicar)="aplicarFiltro()">
+        <span leyenda class="nivel-riesgo">
+            @if(filtro().tipoDato === 'Ultima Depositación'){
+            <span class="nivel-riesgo">
+                Última depositación:
+                <span class="bajo">
+                    <svg class="icono-bajo" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                        viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                        <path fill-rule="evenodd"
+                            d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    Últimas 24 horas
+                </span>
+                <span class="medio">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="currentColor" class="size-6">
+                        <path fill-rule="evenodd"
+                            d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    2 a 7 días
+                </span>
+                <span class="alto">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="currentColor" class="size-6">
+                        <path fill-rule="evenodd"
+                            d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    Más de 7 días
+                </span>
+                <span class="LeyendaUGM0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="currentColor" class="size-6">
+                        <path fill-rule="evenodd"
+                            d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    Sin datos
+                </span>
+            </span>
+            }@else if (filtro().tipoDato === 'UGM') {
+            <span class="nivel-riesgo">
+                UGM:
+                <span class="LeyendaUGM10">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="currentColor" class="size-6">
+                        <path fill-rule="evenodd"
+                            d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    10
+                </span>
+                <span class="LeyendaUGM20">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="currentColor" class="size-6">
+                        <path fill-rule="evenodd"
+                            d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    20
+                </span>
+                <span class="LeyendaUGM21">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="currentColor" class="size-6">
+                        <path fill-rule="evenodd"
+                            d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    21
+                </span>
+                <span class="LeyendaUGM24">
+                    <svg class="icono-bajo" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                        viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                        <path fill-rule="evenodd"
+                            d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    24
+                </span>
+                <span class="LeyendaUGM30">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="currentColor" class="size-6">
+                        <path fill-rule="evenodd"
+                            d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    30
+                </span>
+                <span class="LeyendaUGM40">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="currentColor" class="size-6">
+                        <path fill-rule="evenodd"
+                            d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    40
+                </span>
+                <span class="LeyendaUGM0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="currentColor" class="size-6">
+                        <path fill-rule="evenodd"
+                            d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    Sin datos
+                </span>
+            </span>
+            }@else if (filtro().tipoDato === 'Granulometría') {
+            <span class="nivel-riesgo">
+                Granulometría(%):
+                <span class="bajo">
+                    <svg class="icono-bajo" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                        viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                        <path fill-rule="evenodd"
+                            d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    Alto( ≥ 16)
+                </span>
+                <span class="medio">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="currentColor" class="size-6">
+                        <path fill-rule="evenodd"
+                            d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    Medio(10-15)
+                </span>
+                <span class="alto">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="currentColor" class="size-6">
+                        <path fill-rule="evenodd"
+                            d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    Bajo( ≤ 9)
+                </span>
+                <span class="LeyendaUGM0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="currentColor" class="size-6">
+                        <path fill-rule="evenodd"
+                            d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    Sin datos
+                </span>
+            </span>
+            }
+        </span>
+
+        <div panel-filtros>
+            <fieldset>
+                <legend>Datos por:</legend>
+                @for (t of tiposDato; track t) {
+                <label>
+                    <input type="radio" name="tipoDato" [value]="t" [checked]="borrador().tipoDato === t"
+                        (change)="cambiar({ tipoDato: t })" />
+                    {{ t }}
+                </label>
+                }
+            </fieldset>
+
+            <fieldset>
+                <legend>Filtro de fechas</legend>
+
+                <label>
+                    <input type="radio" name="periodo" [checked]="borrador().periodo === 'semana'"
+                        (change)="cambiar({ periodo: 'semana', desde: '', hasta: '' })" />
+                    Última semana
+                </label>
+                <label>
+                    <input type="radio" name="periodo" [checked]="borrador().periodo === 'mes'"
+                        (change)="cambiar({ periodo: 'mes', desde: '', hasta: '' })" />
+                    Último mes
+                </label>
+                <label>
+                    <input type="radio" name="periodo" [checked]="borrador().periodo === 'shifting'"
+                        (change)="cambiar({ periodo: 'shifting', desde: '', hasta: '' })" />
+                    Último shifting
+                </label>
+
+                <label>
+                    Desde
+                    <input type="date" [value]="borrador().desde"
+                        (change)="cambiar({ desde: $any($event.target).value, periodo: null })" />
+                </label>
+                <label>
+                    Hasta
+                    <input type="date" [value]="borrador().hasta"
+                        (change)="cambiar({ hasta: $any($event.target).value, periodo: null })" />
+                </label>
+            </fieldset>
+
+        </div>
     </app-condicion-mesas>
 
-    @if (expandido()) {
-    <app-georreferencia></app-georreferencia>
-    }
-
+    <ng-content />
 
     <div class="detalles">
 

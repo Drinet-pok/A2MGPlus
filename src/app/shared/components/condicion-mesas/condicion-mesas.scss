@@ -25,14 +25,6 @@
 
 /* Nivel de riesgo */
 
-.nivel-riesgo{
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-
-}
-
 .bajo,.medio,.alto{
   display: flex;
   flex-direction: row;
@@ -156,13 +148,9 @@
 .UGM40     { background-color: #76BA86; }
 .UGM0     { background-color: #f5f4f4c5; }
 
-.LeyendaUGM10 svg { color: #E67C73; }
-.LeyendaUGM20 svg { color: #F2CD5C; }
-.LeyendaUGM21 svg { color: #D4D4D4; }
-.LeyendaUGM24 svg { color: #D96D9A; }
-.LeyendaUGM30 svg { color: #6290C3; }
-.LeyendaUGM40 svg { color: #76BA86; }
-.LeyendaUGM0 svg  { color: #f5f4f4c5; }
+.humedad-alta  { background-color: #00ACA8; }
+.humedad-media { background-color: #98E0D7; }
+.humedad-baja  { background-color: #DEF6F1; }
 
 .size-6 {
   stroke: #727171;
@@ -271,12 +259,7 @@
     white-space: nowrap;
 }
 
-.panel-filtros label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-}
+
 
 .acciones-filtro{
   display: flex;

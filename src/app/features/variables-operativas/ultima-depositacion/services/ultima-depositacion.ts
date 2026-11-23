@@ -1,8 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { delay, of, map } from 'rxjs';
 import { RegistroDepositacion } from '../models/registro-depositacion.model';
-import { REGISTROS_DEPOSITACION_MOCK } from '../models/registros-depositacion.mock';
-import { PosicionEsparcidor } from '../models/posicion-esparcidor.model';
 import { POSICION_ESPARCIDOR_MOCK } from '../models/posicion-esparcidor.mock';
 import { GRIETAS_MOCK } from '../models/grietas.mock';
 import { HttpClient } from '@angular/common/http';

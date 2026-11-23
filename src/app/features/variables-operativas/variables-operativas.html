@@ -23,11 +23,15 @@
         @switch (vistaActual()) {
 
         @case ('depositacion') {
-        <app-ultima-depositacion [bloqueActual]="bloqueActual()"></app-ultima-depositacion>
+        <app-ultima-depositacion [bloqueActual]="bloqueActual()" [grietasSemana]="grietasSemana()"
+            [grietasPorBloque]="grietasPorBloque()" [(bloqueSeleccionado)]="bloqueSeleccionado">
+            <app-georreferencia />
+        </app-ultima-depositacion>
         }
 
         @case ('humedad') {
-        <p>Vista de humedad en construcción.</p>
+        <app-humedad />
+        <app-georreferencia />
         }
 
         @case ('nivelFreatico') {
@@ -38,5 +42,4 @@
 
     </div>
 
-    <app-georreferencia></app-georreferencia>
 </div>

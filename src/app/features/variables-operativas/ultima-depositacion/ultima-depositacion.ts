@@ -1,13 +1,10 @@
-import { Component, computed, inject, signal, OnInit, input } from '@angular/core';
+import { Component, computed, inject, signal, OnInit, input, model } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { UltimaDepositacionService } from './services/ultima-depositacion';
 import { RegistroDepositacion, RegistroConDias } from './models/registro-depositacion.model';
 import { PosicionEsparcidor } from './models/posicion-esparcidor.model';
 import { Grietas } from './models/grietas.models'
-
-import { InfoDiaria } from '../../../shared/components/info-diaria/info-diaria';
-import { CondicionMesas, FiltroDatos } from '../../../shared/components/condicion-mesas/condicion-mesas';
-import { Georreferencia } from '../../../shared/components/georreferencia/georreferencia';
+import { CondicionMesas, FiltroDatos, BloqueVisual } from '../../../shared/components/condicion-mesas/condicion-mesas';
 import { claseColor } from '../../../shared/components/utils/clase-color'
 
 interface BloqueRegistro {
@@ -31,7 +28,7 @@ type Columna =
 
 @Component({
   selector: 'app-ultima-depositacion',
-  imports: [CondicionMesas, Georreferencia, NgTemplateOutlet],
+  imports: [CondicionMesas, NgTemplateOutlet],
   templateUrl: './ultima-depositacion.html',
   styleUrl: './ultima-depositacion.scss',
 })
@@ -40,35 +37,10 @@ export class UltimaDepositacion implements OnInit {
   private readonly diasPorPeriodo = { semana: 7, mes: 30, shifting: 360 };
 
   private ultimaDepositacionService = inject(UltimaDepositacionService);
-  /*
- 
-  paginaActual = signal(1);
-  registrosPorPagina = signal(4);
 
-  registrosPaginados = computed(() => {
-    const inicio = (this.paginaActual() - 1) * this.registrosPorPagina();
-    return this.mesasOrdenadas().slice(inicio, inicio + this.registrosPorPagina());
-  });
-
-  totalPaginas = computed(() =>
-    Math.ceil(this.mesasOrdenadas().length / this.registrosPorPagina())
-  );
-
-  paginaSiguiente() {
-    if (this.paginaActual() < this.totalPaginas()) this.paginaActual.update(p => p + 1);
-  }
-
-  paginaAnterior() {
-    if (this.paginaActual() > 1) this.paginaActual.update(p => p - 1);
-  }
- */
   expandido = signal(true);
 
   alternarExpandido() {
-    /*const inicioActual = (this.paginaActual() - 1) * this.registrosPorPagina();
-    const nuevoTamano = this.expandido() ? 11 : 4;
-    this.registrosPorPagina.set(nuevoTamano);
-    this.paginaActual.set(Math.floor(inicioActual / nuevoTamano) + 1);*/
     this.expandido.update(valor => !valor);
   }
 
@@ -80,7 +52,21 @@ export class UltimaDepositacion implements OnInit {
     tipoResumen: 'Valor prioritario'
   });
 
+  readonly tiposDato = ['Ultima Depositación', 'UGM', 'Granulometría'];
 
+  borrador = signal<FiltroDatos>({ ...this.filtro() });
+
+  copiarFiltro() {
+    this.borrador.set({ ...this.filtro() });
+  }
+
+  cambiar(cambio: Partial<FiltroDatos>) {
+    this.borrador.update(b => ({ ...b, ...cambio }));
+  }
+
+  aplicarFiltro() {
+    this.filtro.set(this.borrador());
+  }
 
   registros = signal<RegistroDepositacion[]>([]);
   cargando = signal(true);
@@ -168,20 +154,11 @@ export class UltimaDepositacion implements OnInit {
     return bloques;
   });
 
-  // BORRAR
-  /*
-    registroFiltrado = computed(() => {
-      return this.registrosFiltrados().filter(f => f.ugm)
-    });
-  
-  
-    mesasIndividualesDepositacion: number[] = [
-      1, 1, 2, 2, 2, 3, 4, 4, 4, 4, 5, 5, 5, 6, 6
-    ];
-  
-  mesasDetalle = computed(() => Math.ceil(this.mesas.length));
-  */
-  // BORRAR
+  bloquesVisuales = computed<BloqueVisual[]>(() =>
+    this.registroPorBloques().map(b => ({
+      clase: claseColor(b, this.filtro().tipoDato),
+    }))
+  );
 
   obtenerColorClase(reg: RegistroConDias): string {
     const maxUgm = Object.entries(reg.ugm).reduce(
@@ -202,48 +179,20 @@ export class UltimaDepositacion implements OnInit {
 
   bloqueActual = input<number | null>(null);
 
-  grietas = signal<Grietas[]>([]);
-
-  grietasSemana = computed(() =>
-    this.grietas().filter(g => Math.abs(this.calcularDias(g.fecha)) <= 7)
-  );
-
-  grietasPorBloque = computed(() => {
-    const bloques: number[] = new Array(TOTAL_BLOQUES).fill(0);
-
-    for (const g of this.grietasSemana()) {
-      // Bloque especial (último índice)
-      if (g.mesa === MESA_GIRO) {
-        bloques[TOTAL_BLOQUES - 1] = 1;
-        continue;
-      }
-
-      const columna = Math.max(0, Math.ceil(g.mesa / MESAS_POR_BLOQUE) - 1);
-
-      let fila: number;
-      if (g.lugar === 'Cordillera') fila = 0;
-      else if (g.lugar === 'Barranco') fila = 1;
-      else continue;
-
-      bloques[fila * BLOQUES_POR_LUGAR + columna] = 1;
-    }
-
-    return bloques;
-  });
+  grietasSemana = input<Grietas[]>([]);
+  grietasPorBloque = input<number[]>([]);
 
   //--------------------------------//
 
-  bloqueSeleccionado = signal<number | null>(null);
+  bloqueSeleccionado = model<number | null>(null);
 
   bloqueActivo = computed<number | null>(
     () => this.bloqueSeleccionado() ?? this.bloqueActual()
   );
 
-
   seleccionarBloque(numero: number) {
     this.bloqueSeleccionado.set(numero);
   }
-
 
   volverAUltimaPosicion() {
     this.bloqueSeleccionado.set(null);
@@ -254,7 +203,6 @@ export class UltimaDepositacion implements OnInit {
     if (s === null) return null;
     return s > BLOQUES_POR_LUGAR ? 'barranco' : 'cordillera';
   });
-
 
   //--------------------------------//
 
@@ -267,7 +215,6 @@ export class UltimaDepositacion implements OnInit {
 
     return { inicio: seccion * MESAS_POR_BLOQUE - (MESAS_POR_BLOQUE - 1), fin: seccion * MESAS_POR_BLOQUE };
   });
-
 
   mesasIndividuales = computed(() => {
     const { inicio, fin } = this.rangoDetalleBloque();
@@ -382,10 +329,6 @@ export class UltimaDepositacion implements OnInit {
         this.cargando.set(false);
       },
       error: () => this.cargando.set(false)
-    });
-
-    this.ultimaDepositacionService.obtenerGrietas().subscribe({
-      next: (datos) => this.grietas.set(datos),
     });
   }
 

@@ -252,3 +252,60 @@ th.ordenable:hover {
   right: 3px;
   color: red;
 }
+
+.nivel-riesgo{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+
+}
+.bajo,.medio,.alto{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.bajo svg{
+  color: #E97132;
+}
+
+.medio svg{
+  color: #F2AA84;
+}
+
+.hoy    { background-color: #E97132; }
+.reciente { background-color: #F2AA84; }
+.pasado     { background-color: #FBE3D6; }
+.UGM10     { background-color: #E67C73; }
+.UGM20     { background-color: #F2CD5C; }
+.UGM21     { background-color: #D4D4D4; }
+.UGM24     { background-color: #D96D9A; }
+.UGM30     { background-color: #6290C3; }
+.UGM40     { background-color: #76BA86; }
+.UGM0     { background-color: #f5f4f4c5; }
+
+.alto svg {
+  color: #FBE3D6;
+}
+
+.LeyendaUGM10 svg { color: #E67C73; }
+.LeyendaUGM20 svg { color: #F2CD5C; }
+.LeyendaUGM21 svg { color: #D4D4D4; }
+.LeyendaUGM24 svg { color: #D96D9A; }
+.LeyendaUGM30 svg { color: #6290C3; }
+.LeyendaUGM40 svg { color: #76BA86; }
+.LeyendaUGM0 svg  { color: #f5f4f4c5; }
+
+[panel-filtros] {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+[panel-filtros] label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}

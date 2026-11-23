@@ -1,1 +1,62 @@
-<p>humedad works!</p>
+<div class="page-container">
+
+    <app-condicion-mesas [mesas]="bloquesVisuales()" [posicion]="bloqueActual()" [seleccionada]="bloqueActivo()"
+        (seccionClick)="seleccionarBloque($event)" [grietas]="grietasPorBloque()" (abrirPanel)="copiarFiltro()"
+        (aplicar)="aplicarFiltro()">
+
+        <span leyenda class="nivel-riesgo">
+            <span class="nivel-riesgo">
+                Humedad:
+                <span class="bajo">
+                    <svg class="icono-bajo" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                        viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                        <path fill-rule="evenodd"
+                            d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    Alta
+                </span>
+                <span class="medio">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="currentColor" class="size-6">
+                        <path fill-rule="evenodd"
+                            d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    Media
+                </span>
+                <span class="alto">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="currentColor" class="size-6">
+                        <path fill-rule="evenodd"
+                            d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    Baja
+                </span>
+                <span class="LeyendaUGM0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="currentColor" class="size-6">
+                        <path fill-rule="evenodd"
+                            d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    Sin datos
+                </span>
+            </span>
+        </span>
+
+        <div panel-filtros>
+            <fieldset>
+                <legend>Fecha de medición</legend>
+                <label>
+                    <input type="date" [value]="borrador()" (change)="cambiar($any($event.target).value)" />
+                </label>
+            </fieldset>
+        </div>
+    </app-condicion-mesas>
+
+    <ng-content />
+
+    
+</div>
